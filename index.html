@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Malak Meow Machine | Aetheris Edition</title>
+<title>Malak Meow Machine</title>
 <link rel="icon" href="assets/cat.png" type="image/png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -15,564 +15,143 @@
 <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
 
 <style>
-    :root { 
-        --blush: #FFB2C5; 
-        --rose: #CF7486; 
-        --petal: #F5DFE5; 
-        --void: #12080a; 
-    }
+    :root { --blush: #FFB2C5; --rose: #CF7486; --petal: #F5DFE5; --void: #12080a; }
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
-
-    body {
-        margin: 0;
-        overflow: hidden;
-        background-color: var(--void);
-        font-family: 'Baloo 2', cursive;
-        cursor: none;
-    }
-
-    canvas {
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 0;
-        filter: contrast(1.15) brightness(1.1);
-        mask-image: radial-gradient(circle, black 75%, transparent 100%);
-    }
-
-    .ui-layer {
-        position: relative;
-        z-index: 10;
-        pointer-events: none;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
+    body { margin: 0; overflow: hidden; background-color: var(--void); font-family: 'Baloo 2', cursive; cursor: none; }
+    canvas { display: block; position: fixed; top: 0; left: 0; z-index: 0; filter: contrast(1.15) brightness(1.1); mask-image: radial-gradient(circle, black 75%, transparent 100%); }
+    .ui-layer { position: relative; z-index: 10; pointer-events: none; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
     .interactive { pointer-events: auto; }
-
-    /* ── LIVE COUNTER STYLING ── */
-    #live-widget {
-        position: fixed;
-        top: 24px;
-        right: 24px;
-        z-index: 100;
-        background: rgba(255, 178, 197, 0.05);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 178, 197, 0.1);
-        padding: 8px 16px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--blush);
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    #live-indicator {
-        width: 8px;
-        height: 8px;
-        background: #00ffaa;
-        border-radius: 50%;
-        box-shadow: 0 0 10px #00ffaa;
-        animation: pulse-green 2s infinite;
-    }
-
-    @keyframes pulse-green {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 170, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 255, 170, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 170, 0); }
-    }
-
-    h1 { 
-        font-size: 3rem; 
-        font-weight: 800; 
-        color: var(--blush); 
-        letter-spacing: .04em; 
-        margin-bottom: 36px; 
-        text-align: center; 
-        text-shadow: 0 4px 15px rgba(207,116,134,.5), 0 0 30px rgba(255,178,197,.3);
-        mix-blend-mode: plus-lighter;
-    }
-
-    #mb {
-        background: none; border: none; padding: 0; outline: none; display: block;
-        width: 280px; height: 280px;
-        transition: transform .15s cubic-bezier(0.34, 1.56, 0.64, 1), filter .15s ease;
-        filter: drop-shadow(0 10px 40px rgba(207,116,134,.6));
-        cursor: none;
-        will-change: transform, filter;
-    }
+    #live-widget { position: fixed; top: 24px; right: 24px; z-index: 100; background: rgba(255, 178, 197, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 178, 197, 0.1); padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: var(--blush); letter-spacing: 0.05em; text-transform: uppercase; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+    #live-indicator { width: 8px; height: 8px; background: #00ffaa; border-radius: 50%; box-shadow: 0 0 10px #00ffaa; animation: pulse-green 2s infinite; }
+    @keyframes pulse-green { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 170, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 255, 170, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 170, 0); } }
+    h1 { font-size: 3rem; font-weight: 800; color: var(--blush); letter-spacing: .04em; margin-bottom: 36px; text-align: center; text-shadow: 0 4px 15px rgba(207,116,134,.5), 0 0 30px rgba(255,178,197,.3); mix-blend-mode: plus-lighter; }
+    #mb { background: none; border: none; padding: 0; outline: none; display: block; width: 280px; height: 280px; transition: transform .15s cubic-bezier(0.34, 1.56, 0.64, 1), filter .15s ease; filter: drop-shadow(0 10px 40px rgba(207,116,134,.6)); cursor: none; will-change: transform, filter; }
     #mb img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
     #mb:hover { transform: translateY(-8px) scale(1.05); filter: drop-shadow(0 25px 50px rgba(207,116,134,.8)); }
     #mb:active { transform: translateY(4px) scale(.94); filter: drop-shadow(0 5px 15px rgba(207,116,134,.4)); transition-duration: .05s; }
-
     .ht { position: fixed; font-size: 2rem; pointer-events: none; animation: fu 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; z-index: 999; will-change: transform, opacity; }
     @keyframes fu { 0% { opacity: 1; transform: translate3d(0,0,0) scale(0.5); } 50% { transform: translate3d(0,-100px,0) scale(1.3); } 100% { opacity: 0; transform: translate3d(0,-200px,0) scale(1.6); } }
-
-    #custom-cursor {
-        width: 8px; height: 8px;
-        background: #ffffff;
-        box-shadow: 0 0 10px 4px var(--blush), 0 0 20px 8px var(--rose);
-        position: fixed; top: 0; left: 0; border-radius: 50%; pointer-events: none; z-index: 9999;
-        will-change: transform;
-    }
-    #cursor-trail {
-        width: 25px; height: 25px;
-        background: radial-gradient(circle, var(--blush) 0%, rgba(255,178,197,0) 70%);
-        mix-blend-mode: screen;
-        position: fixed; top: 0; left: 0; border-radius: 50%; pointer-events: none; z-index: 9998;
-        will-change: transform;
-    }
-
-    body.hovering #custom-cursor {
-        box-shadow: 0 0 15px 8px var(--blush), 0 0 35px 15px var(--rose);
-        transform: scale(1.5);
-    }
-
-    .noise-overlay {
-        position: fixed; inset: 0; z-index: 1; opacity: 0.04; pointer-events: none;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    }
+    #custom-cursor { width: 8px; height: 8px; background: #ffffff; box-shadow: 0 0 10px 4px var(--blush), 0 0 20px 8px var(--rose); position: fixed; top: 0; left: 0; border-radius: 50%; pointer-events: none; z-index: 9999; will-change: transform; }
+    #cursor-trail { width: 25px; height: 25px; background: radial-gradient(circle, var(--blush) 0%, rgba(255,178,197,0) 70%); mix-blend-mode: screen; position: fixed; top: 0; left: 0; border-radius: 50%; pointer-events: none; z-index: 9998; will-change: transform; }
+    body.hovering #custom-cursor { box-shadow: 0 0 15px 8px var(--blush), 0 0 35px 15px var(--rose); transform: scale(1.5); }
+    .noise-overlay { position: fixed; inset: 0; z-index: 1; opacity: 0.04; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 </style>
 </head>
 <body>
-
     <div id="custom-cursor"></div>
     <div id="cursor-trail"></div>
     <div class="noise-overlay"></div>
-
-    <!-- Live Counter Widget -->
     <div id="live-widget" class="interactive">
         <div id="live-indicator"></div>
         <span>Active: <span id="user-count">...</span></span>
     </div>
-
     <div class="ui-layer">
         <h1>malak meow machine 🐱</h1>
-        <button id="mb" class="interactive" aria-label="Meow!">
-            <img id="bi" src="assets/unclicked.png" alt="">
-        </button>
+        <button id="mb" class="interactive" aria-label="Meow!"><img id="bi" src="assets/unclicked.png" alt=""></button>
     </div>
 
     <!-- ── SHADERS ── -->
     <script id="vertexShader" type="x-shader/x-vertex">
-        uniform float uTime;
-        uniform float uPixelRatio;
-        uniform float uSize;
-        uniform vec2 uMouse;
-        
-        attribute float aScale;
-        attribute vec3 aRandomness;
-        
-        varying vec3 vColor;
-        varying float vAlpha;
-        varying float vTwinkle;
-
+        uniform float uTime; uniform float uPixelRatio; uniform float uSize; uniform vec2 uMouse; attribute float aScale; attribute vec3 aRandomness; varying vec3 vColor; varying float vAlpha; varying float vTwinkle;
         vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
         vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
         vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
         vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
-
-        float snoise(vec3 v) {
-            const vec2 C = vec2(1.0/6.0, 1.0/3.0);
-            const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
-            vec3 i  = floor(v + dot(v, C.yyy));
-            vec3 x0 = v - i + dot(i, C.xxx);
-            vec3 g = step(x0.yzx, x0.xyz);
-            vec3 l = 1.0 - g;
-            vec3 i1 = min(g.xyz, l.zxy);
-            vec3 i2 = max(g.xyz, l.zxy);
-            vec3 x1 = x0 - i1 + C.xxx;
-            vec3 x2 = x0 - i2 + C.yyy;
-            vec3 x3 = x0 - D.yyy;
-            i = mod289(i);
-            vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));
-            float n_ = 0.142857142857;
-            vec3 ns = n_ * D.wyz - D.xzx;
-            vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
-            vec4 x_ = floor(j * ns.z);
-            vec4 y_ = floor(j - 7.0 * x_);
-            vec4 x = x_ * ns.x + ns.yyyy;
-            vec4 y = y_ * ns.x + ns.yyyy;
-            vec4 h = 1.0 - abs(x) - abs(y);
-            vec4 b0 = vec4(x.xy, y.xy);
-            vec4 b1 = vec4(x.zw, y.zw);
-            vec4 s0 = floor(b0)*2.0 + 1.0;
-            vec4 s1 = floor(b1)*2.0 + 1.0;
-            vec4 sh = -step(h, vec4(0.0));
-            vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
-            vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
-            vec3 p0 = vec3(a0.xy, h.x);
-            vec3 p1 = vec3(a0.zw, h.y);
-            vec3 p2 = vec3(a1.xy, h.z);
-            vec3 p3 = vec3(a1.zw, h.w);
-            vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
-            p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
-            vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
-            m = m * m;
-            return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
-        }
-
-        vec3 getCurl(vec3 p) {
-            float e = 0.01;
-            vec3 dx = vec3(e, 0.0, 0.0);
-            vec3 dy = vec3(0.0, e, 0.0);
-            vec3 dz = vec3(0.0, 0.0, e);
-            float n1 = snoise(p + dy) - snoise(p - dy);
-            float n2 = snoise(p + dz) - snoise(p - dz);
-            float n3 = snoise(p + dz) - snoise(p - dz);
-            float n4 = snoise(p + dx) - snoise(p - dx);
-            float n5 = snoise(p + dx) - snoise(p - dx);
-            float n6 = snoise(p + dy) - snoise(p - dy);
-            return vec3(n1 - n2, n3 - n4, n5 - n6);
-        }
-
-        void main() {
-            vec3 pos = position;
-            vec3 curl1 = getCurl(pos * 0.001 + uTime * 0.05);
-            pos += curl1 * 70.0;
-            vec3 curl2 = getCurl(pos * 0.004 - uTime * 0.08);
-            pos += curl2 * 15.0;
-
-            vec2 m = uMouse * 600.0;
-            float dist = distance(pos.xy, m);
-            float influence = 1.0 - smoothstep(0.0, 350.0, dist);
-            vec2 dir = normalize(pos.xy - m);
-            vec2 stir = vec2(-dir.y, dir.x) * influence * 12.0;
-            pos.xy += stir;
-            pos.xy += (m - pos.xy) * influence * 0.12;
-
-            vec4 viewPos = viewMatrix * vec4(pos, 1.0);
-            gl_Position = projectionMatrix * viewPos;
-
-            vec3 colorA = vec3(1.0, 0.698, 0.773); 
-            vec3 colorB = vec3(0.812, 0.455, 0.525);
-            
-            vColor = mix(colorA, colorB, (curl1.x + 1.0) * 0.5);
-            vColor += influence * vec3(0.15, 0.05, 0.1); 
-
-            vAlpha = (1.0 - smoothstep(800.0, 1500.0, -viewPos.z)) * 0.7;
-            
-            // ── ISOLATED STAR TWINKLE (Few dozen) ──
-            float isTwinkler = step(0.9998, aRandomness.y); 
-            float twinkleSpeed = 3.5 + aRandomness.z * 4.0;
-            float t = uTime * twinkleSpeed + aRandomness.x * 30.0;
-            float blink = sin(t) * cos(t * 0.75) * sin(t * 0.4); 
-            vTwinkle = isTwinkler * pow(max(0.0, blink), 10.0) * 15.0; 
-
-            gl_PointSize = uSize * (aScale + vTwinkle) * uPixelRatio * (1100.0 / -viewPos.z);
-        }
+        float snoise(vec3 v) { const vec2 C = vec2(1.0/6.0, 1.0/3.0); const vec4 D = vec4(0.0, 0.5, 1.0, 2.0); vec3 i  = floor(v + dot(v, C.yyy)); vec3 x0 = v - i + dot(i, C.xxx); vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g; vec3 i1 = min(g.xyz, l.zxy); vec3 i2 = max(g.xyz, l.zxy); vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy; i = mod289(i); vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0)); float n_ = 0.142857142857; vec3 ns = n_ * D.wyz - D.xzx; vec4 j = p - 49.0 * floor(p * ns.z * ns.z); vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_); vec4 x = x_ * ns.x + ns.yyyy; vec4 y = y_ * ns.x + ns.yyyy; vec4 h = 1.0 - abs(x) - abs(y); vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw); vec4 s0 = floor(b0)*2.0 + 1.0; vec4 s1 = floor(b1)*2.0 + 1.0; vec4 sh = -step(h, vec4(0.0)); vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww; vec3 p0 = vec3(a0.xy, h.x); vec3 p1 = vec3(a0.zw, h.y); vec3 p2 = vec3(a1.xy, h.z); vec3 p3 = vec3(a1.zw, h.w); vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3))); p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w; vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0); m = m * m; return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3))); }
+        vec3 getCurl(vec3 p) { float e = 0.01; vec3 dx = vec3(e, 0.0, 0.0); vec3 dy = vec3(0.0, e, 0.0); vec3 dz = vec3(0.0, 0.0, e); float n1 = snoise(p + dy) - snoise(p - dy); float n2 = snoise(p + dz) - snoise(p - dz); float n3 = snoise(p + dz) - snoise(p - dz); float n4 = snoise(p + dx) - snoise(p - dx); float n5 = snoise(p + dx) - snoise(p - dx); float n6 = snoise(p + dy) - snoise(p - dy); return vec3(n1 - n2, n3 - n4, n5 - n6); }
+        void main() { vec3 pos = position; vec3 curl1 = getCurl(pos * 0.001 + uTime * 0.05); pos += curl1 * 70.0; vec3 curl2 = getCurl(pos * 0.004 - uTime * 0.08); pos += curl2 * 15.0; vec2 m = uMouse * 600.0; float dist = distance(pos.xy, m); float influence = 1.0 - smoothstep(0.0, 350.0, dist); vec2 dir = normalize(pos.xy - m); vec2 stir = vec2(-dir.y, dir.x) * influence * 12.0; pos.xy += stir; pos.xy += (m - pos.xy) * influence * 0.12; vec4 viewPos = viewMatrix * vec4(pos, 1.0); gl_Position = projectionMatrix * viewPos; vec3 colorA = vec3(1.0, 0.698, 0.773); vec3 colorB = vec3(0.812, 0.455, 0.525); vColor = mix(colorA, colorB, (curl1.x + 1.0) * 0.5); vColor += influence * vec3(0.15, 0.05, 0.1); vAlpha = (1.0 - smoothstep(800.0, 1500.0, -viewPos.z)) * 0.7; float isTwinkler = step(0.9998, aRandomness.y); float twinkleSpeed = 3.5 + aRandomness.z * 4.0; float t = uTime * twinkleSpeed + aRandomness.x * 30.0; float blink = sin(t) * cos(t * 0.75) * sin(t * 0.4); vTwinkle = isTwinkler * pow(max(0.0, blink), 10.0) * 15.0; gl_PointSize = uSize * (aScale + vTwinkle) * uPixelRatio * (1100.0 / -viewPos.z); }
     </script>
-
     <script id="fragmentShader" type="x-shader/x-fragment">
-        varying vec3 vColor;
-        varying float vAlpha;
-        varying float vTwinkle;
-        void main() {
-            float dist = distance(gl_PointCoord, vec2(0.5));
-            if(dist > 0.5) discard;
-            float glow = pow(1.0 - dist * 2.0, 4.0);
-            float core = pow(1.0 - dist * 2.0, 18.0);
-            
-            vec3 sparkleColor = mix(vColor, vec3(1.0), clamp(vTwinkle * 0.5, 0.0, 1.0));
-            float finalAlpha = (glow * 0.7 + core * (0.3 + vTwinkle * 4.0)) * vAlpha;
-            
-            gl_FragColor = vec4(sparkleColor, finalAlpha);
-        }
+        varying vec3 vColor; varying float vAlpha; varying float vTwinkle;
+        void main() { float dist = distance(gl_PointCoord, vec2(0.5)); if(dist > 0.5) discard; float glow = pow(1.0 - dist * 2.0, 4.0); float core = pow(1.0 - dist * 2.0, 18.0); vec3 sparkleColor = mix(vColor, vec3(1.0), clamp(vTwinkle * 0.5, 0.0, 1.0)); float finalAlpha = (glow * 0.7 + core * (0.3 + vTwinkle * 4.0)) * vAlpha; gl_FragColor = vec4(sparkleColor, finalAlpha); }
     </script>
-
-    <!-- ── COMET SHADERS ── -->
     <script id="cometVertexShader" type="x-shader/x-vertex">
-        uniform float uPixelRatio;
-        varying vec3 vColor;
-        varying float vAlpha;
-        attribute float aAlpha;
-
-        void main() {
-            vColor = vec3(1.0, 0.8, 0.9);
-            vAlpha = aAlpha;
-            vec4 viewPos = viewMatrix * vec4(position, 1.0);
-            gl_Position = projectionMatrix * viewPos;
-            gl_PointSize = 12.0 * uPixelRatio * (800.0 / -viewPos.z);
-        }
+        uniform float uPixelRatio; varying vec3 vColor; varying float vAlpha; attribute float aAlpha;
+        void main() { vColor = vec3(1.0, 0.8, 0.9); vAlpha = aAlpha; vec4 viewPos = viewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * viewPos; gl_PointSize = 12.0 * uPixelRatio * (800.0 / -viewPos.z); }
     </script>
-
     <script id="cometFragmentShader" type="x-shader/x-fragment">
-        varying vec3 vColor;
-        varying float vAlpha;
-        void main() {
-            float dist = distance(gl_PointCoord, vec2(0.5));
-            if(dist > 0.5) discard;
-            float glow = pow(1.0 - dist * 2.0, 3.0);
-            gl_FragColor = vec4(vColor, glow * vAlpha);
-        }
+        varying vec3 vColor; varying float vAlpha;
+        void main() { float dist = distance(gl_PointCoord, vec2(0.5)); if(dist > 0.5) discard; float glow = pow(1.0 - dist * 2.0, 3.0); gl_FragColor = vec4(vColor, glow * vAlpha); }
     </script>
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, collection, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
         (function(){
             document.addEventListener("contextmenu", e => e.preventDefault());
-            document.addEventListener("keydown", e => {
-                if(e.key==="F12" || (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key.toUpperCase())) || (e.ctrlKey && ["U","S"].includes(e.key.toUpperCase()))) {
-                    e.preventDefault(); return false;
-                }
-            });
+            document.addEventListener("keydown", e => { if(e.key==="F12" || (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key.toUpperCase())) || (e.ctrlKey && ["U","S"].includes(e.key.toUpperCase()))) { e.preventDefault(); return false; } });
 
             let scene, camera, renderer, points, cometPoints;
-            const count = 120000;
-            const clock = new THREE.Clock();
-            const mouse = new THREE.Vector2(-10, -10);
-            const targetMouse = new THREE.Vector2(-10, -10);
+            const count = 120000; const clock = new THREE.Clock(); const mouse = new THREE.Vector2(-10, -10); const targetMouse = new THREE.Vector2(-10, -10);
             let realMouseX = window.innerWidth / 2, realMouseY = window.innerHeight / 2;
-
-            const comets = [];
-            const cometCount = 400;
+            const comets = []; const cometCount = 400;
 
             function initAetheris() {
-                scene = new THREE.Scene();
-                camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 4000);
-                camera.position.z = 1200;
-
+                scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 4000); camera.position.z = 1200;
                 renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: "high-performance" });
-                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); renderer.setSize(window.innerWidth, window.innerHeight);
                 document.body.insertBefore(renderer.domElement, document.body.firstChild);
-
-                const geo = new THREE.BufferGeometry();
-                const pos = new Float32Array(count * 3);
-                const scales = new Float32Array(count);
-                const randoms = new Float32Array(count * 3);
-
-                for(let i = 0; i < count; i++) {
-                    pos[i*3] = (Math.random() - 0.5) * 2200;
-                    pos[i*3+1] = (Math.random() - 0.5) * 1400;
-                    pos[i*3+2] = (Math.random() - 0.5) * 800;
-                    scales[i] = 0.4 + Math.random() * 0.8;
-                    randoms[i*3] = Math.random();
-                    randoms[i*3+1] = Math.random();
-                    randoms[i*3+2] = Math.random();
-                }
-
-                geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-                geo.setAttribute('aScale', new THREE.BufferAttribute(scales, 1));
-                geo.setAttribute('aRandomness', new THREE.BufferAttribute(randoms, 3));
-
-                const mat = new THREE.ShaderMaterial({
-                    uniforms: { uTime: { value: 0 }, uSize: { value: 14.0 }, uPixelRatio: { value: renderer.getPixelRatio() }, uMouse: { value: mouse } },
-                    vertexShader: document.getElementById('vertexShader').textContent,
-                    fragmentShader: document.getElementById('fragmentShader').textContent,
-                    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
-                });
-
-                points = new THREE.Points(geo, mat);
-                scene.add(points);
-
-                const cometGeo = new THREE.BufferGeometry();
-                cometGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(cometCount * 3), 3));
-                cometGeo.setAttribute('aAlpha', new THREE.BufferAttribute(new Float32Array(cometCount), 1));
-                
-                const cometMat = new THREE.ShaderMaterial({
-                    uniforms: { uPixelRatio: { value: renderer.getPixelRatio() } },
-                    vertexShader: document.getElementById('cometVertexShader').textContent,
-                    fragmentShader: document.getElementById('cometFragmentShader').textContent,
-                    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
-                });
-
-                cometPoints = new THREE.Points(cometGeo, cometMat);
-                scene.add(cometPoints);
-
-                window.addEventListener('resize', onResize);
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('touchmove', onTouchMove, { passive: false });
-
-                // Initialize Real User Counter via Firestore
-                initRealLiveCounter();
-
-                animate();
+                const geo = new THREE.BufferGeometry(); const pos = new Float32Array(count * 3); const scales = new Float32Array(count); const randoms = new Float32Array(count * 3);
+                for(let i = 0; i < count; i++) { pos[i*3] = (Math.random() - 0.5) * 2200; pos[i*3+1] = (Math.random() - 0.5) * 1400; pos[i*3+2] = (Math.random() - 0.5) * 800; scales[i] = 0.4 + Math.random() * 0.8; randoms[i*3] = Math.random(); randoms[i*3+1] = Math.random(); randoms[i*3+2] = Math.random(); }
+                geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('aScale', new THREE.BufferAttribute(scales, 1)); geo.setAttribute('aRandomness', new THREE.BufferAttribute(randoms, 3));
+                const mat = new THREE.ShaderMaterial({ uniforms: { uTime: { value: 0 }, uSize: { value: 14.0 }, uPixelRatio: { value: renderer.getPixelRatio() }, uMouse: { value: mouse } }, vertexShader: document.getElementById('vertexShader').textContent, fragmentShader: document.getElementById('fragmentShader').textContent, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
+                points = new THREE.Points(geo, mat); scene.add(points);
+                const cometGeo = new THREE.BufferGeometry(); cometGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(cometCount * 3), 3)); cometGeo.setAttribute('aAlpha', new THREE.BufferAttribute(new Float32Array(cometCount), 1));
+                const cometMat = new THREE.ShaderMaterial({ uniforms: { uPixelRatio: { value: renderer.getPixelRatio() } }, vertexShader: document.getElementById('cometVertexShader').textContent, fragmentShader: document.getElementById('cometFragmentShader').textContent, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
+                cometPoints = new THREE.Points(cometGeo, cometMat); scene.add(cometPoints);
+                window.addEventListener('resize', onResize); document.addEventListener('mousemove', onMouseMove); document.addEventListener('touchmove', onTouchMove, { passive: false });
+                initRealLiveCounter(); animate();
             }
 
-            // ── REAL FIREBASE LIVE COUNTER ──
             async function initRealLiveCounter() {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                const firebaseConfig = JSON.parse(__firebase_config);
+                const firebaseConfig = {
+                    apiKey: "AIzaSyBbDEchPpXzDE6-e2N1Ev9hr_dlMjB371o",
+                    authDomain: "malakmeowmachine.firebaseapp.com",
+                    projectId: "malakmeowmachine",
+                    storageBucket: "malakmeowmachine.firebasestorage.app",
+                    messagingSenderId: "1046548928544",
+                    appId: "1:1046548928544:web:3b37ec0792df4d9a688445",
+                    measurementId: "G-5DNXDW2BLV"
+                }; 
+
+                const appId = 'malakmeowmachine';
                 const app = initializeApp(firebaseConfig);
                 const auth = getAuth(app);
                 const db = getFirestore(app);
                 const countEl = document.getElementById('user-count');
 
-                // Step 1: Authenticate
                 try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } catch (e) {
-                    console.error("Auth failed:", e);
-                }
-
-                onAuthStateChanged(auth, (user) => {
-                    if (!user) return;
-
-                    const presenceDoc = doc(db, 'artifacts', appId, 'public', 'data', 'presence', user.uid);
-                    
-                    // Step 2: Set heartbeat
-                    const updateHeartbeat = async () => {
-                        try {
-                            await setDoc(presenceDoc, { 
-                                lastSeen: serverTimestamp(),
-                                userId: user.uid 
-                            }, { merge: true });
-                        } catch (e) { /* ignore quiet failures */ }
-                    };
-                    updateHeartbeat();
-                    setInterval(updateHeartbeat, 45000); // Check in every 45s
-
-                    // Step 3: Listen for others
-                    const presenceCollection = collection(db, 'artifacts', appId, 'public', 'data', 'presence');
-                    onSnapshot(presenceCollection, (snapshot) => {
-                        const now = Date.now();
-                        const threshold = 120000; // 2 minutes
-                        let activeCount = 0;
-                        
-                        snapshot.forEach(doc => {
-                            const data = doc.data();
-                            if (data.lastSeen && data.lastSeen.toMillis) {
-                                if (now - data.lastSeen.toMillis() < threshold) {
-                                    activeCount++;
-                                }
-                            }
+                    await signInAnonymously(auth);
+                    onAuthStateChanged(auth, (user) => {
+                        if (!user) return;
+                        const presenceDoc = doc(db, 'artifacts', appId, 'public', 'data', 'presence', user.uid);
+                        const updateHeartbeat = async () => { try { await setDoc(presenceDoc, { lastSeen: serverTimestamp(), userId: user.uid }, { merge: true }); } catch (e) {} };
+                        updateHeartbeat(); setInterval(updateHeartbeat, 30000);
+                        const presenceCollection = collection(db, 'artifacts', appId, 'public', 'data', 'presence');
+                        onSnapshot(presenceCollection, (snapshot) => {
+                            const now = Date.now(); const threshold = 60000; let activeCount = 0;
+                            snapshot.forEach(doc => { const data = doc.data(); if (data.lastSeen && data.lastSeen.toMillis) { if (now - data.lastSeen.toMillis() < threshold) { activeCount++; } } });
+                            countEl.innerText = Math.max(1, activeCount);
                         });
-                        
-                        // Safety minimum of 1 (yourself)
-                        countEl.innerText = Math.max(1, activeCount);
-                    }, (err) => {
-                        console.error("Presence snapshot error:", err);
-                        countEl.innerText = "Offline";
                     });
-                });
+                } catch (e) { countEl.innerText = "Offline"; }
             }
 
-            function spawnComet() {
-                if (comets.length > 0) return;
-                const side = Math.random() > 0.5;
-                comets.push({
-                    pos: new THREE.Vector3(side ? -1200 : 1200, (Math.random()-0.5)*800, (Math.random()-0.5)*500),
-                    vel: new THREE.Vector3(side ? 35 : -35, (Math.random()-0.5)*15, 0),
-                    life: 1.0,
-                    trail: []
-                });
-            }
-
-            function updateComets() {
-                const posAttr = cometPoints.geometry.attributes.position;
-                const alphaAttr = cometPoints.geometry.attributes.aAlpha;
-                let idx = 0;
-                for (let i = comets.length - 1; i >= 0; i--) {
-                    const c = comets[i];
-                    c.pos.add(c.vel);
-                    c.life -= 0.012;
-                    c.trail.unshift(c.pos.clone());
-                    if (c.trail.length > 40) c.trail.pop();
-                    if (c.life <= 0 || Math.abs(c.pos.x) > 1500) { comets.splice(i, 1); continue; }
-                    for (let j = 0; j < c.trail.length; j++) {
-                        if (idx >= cometCount) break;
-                        const p = c.trail[j];
-                        posAttr.array[idx * 3] = p.x;
-                        posAttr.array[idx * 3 + 1] = p.y;
-                        posAttr.array[idx * 3 + 2] = p.z;
-                        alphaAttr.array[idx] = (1.0 - j / c.trail.length) * c.life;
-                        idx++;
-                    }
-                }
-                for (let k = idx; k < cometCount; k++) { alphaAttr.array[k] = 0; }
-                posAttr.needsUpdate = true; alphaAttr.needsUpdate = true;
-                if (Math.random() < 0.005) spawnComet();
-            }
-
-            function onMouseMove(e) {
-                realMouseX = e.clientX; realMouseY = e.clientY;
-                targetMouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-                targetMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-            }
-
-            function onTouchMove(e) {
-                if(e.touches.length > 0) {
-                    const t = e.touches[0];
-                    realMouseX = t.clientX; realMouseY = t.clientY;
-                    targetMouse.x = (t.clientX / window.innerWidth) * 2 - 1;
-                    targetMouse.y = -(t.clientY / window.innerHeight) * 2 + 1;
-                }
-            }
-
-            function onResize() {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                points.material.uniforms.uPixelRatio.value = renderer.getPixelRatio();
-                cometPoints.material.uniforms.uPixelRatio.value = renderer.getPixelRatio();
-            }
-
-            const cursor = document.getElementById('custom-cursor');
-            const trail = document.getElementById('cursor-trail');
-            let curX = realMouseX, curY = realMouseY, trX = realMouseX, trY = realMouseY;
-
-            function animate() {
-                const time = clock.getElapsedTime();
-                points.material.uniforms.uTime.value = time;
-                mouse.x += (targetMouse.x - mouse.x) * 0.08;
-                mouse.y += (targetMouse.y - mouse.y) * 0.08;
-                points.material.uniforms.uMouse.value = mouse;
-                camera.position.x += (targetMouse.x * 80 - camera.position.x) * 0.02;
-                camera.position.y += (targetMouse.y * 80 - camera.position.y) * 0.02;
-                camera.lookAt(0, 0, 0);
-                updateComets();
-                curX += (realMouseX - curX) * 0.8; curY += (realMouseY - curY) * 0.8;
-                trX += (realMouseX - trX) * 0.3; trY += (realMouseY - trY) * 0.3;
-                cursor.style.transform = `translate3d(${curX}px, ${curY}px, 0) translate3d(-50%, -50%, 0)`;
-                trail.style.transform = `translate3d(${trX}px, ${trY}px, 0) translate3d(-50%, -50%, 0)`;
-                renderer.render(scene, camera);
-                requestAnimationFrame(animate);
-            }
-
-            const btn = document.getElementById('mb');
-            const img = document.getElementById('bi');
-            const snd = new Audio('https://www.myinstants.com/media/sounds/meow-1.mp3');
-            btn.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-            btn.addEventListener('mouseleave', () => { document.body.classList.remove('hovering'); img.src = 'assets/unclicked.png'; });
+            function spawnComet() { if (comets.length > 0) return; const side = Math.random() > 0.5; comets.push({ pos: new THREE.Vector3(side ? -1200 : 1200, (Math.random()-0.5)*800, (Math.random()-0.5)*500), vel: new THREE.Vector3(side ? 35 : -35, (Math.random()-0.5)*15, 0), life: 1.0, trail: [] }); }
+            function updateComets() { const posAttr = cometPoints.geometry.attributes.position; const alphaAttr = cometPoints.geometry.attributes.aAlpha; let idx = 0; for (let i = comets.length - 1; i >= 0; i--) { const c = comets[i]; c.pos.add(c.vel); c.life -= 0.012; c.trail.unshift(c.pos.clone()); if (c.trail.length > 40) c.trail.pop(); if (c.life <= 0 || Math.abs(c.pos.x) > 1500) { comets.splice(i, 1); continue; } for (let j = 0; j < c.trail.length; j++) { if (idx >= cometCount) break; const p = c.trail[j]; posAttr.array[idx * 3] = p.x; posAttr.array[idx * 3 + 1] = p.y; posAttr.array[idx * 3 + 2] = p.z; alphaAttr.array[idx] = (1.0 - j / c.trail.length) * c.life; idx++; } } for (let k = idx; k < cometCount; k++) { alphaAttr.array[k] = 0; } posAttr.needsUpdate = true; alphaAttr.needsUpdate = true; if (Math.random() < 0.005) spawnComet(); }
+            function onMouseMove(e) { realMouseX = e.clientX; realMouseY = e.clientY; targetMouse.x = (e.clientX / window.innerWidth) * 2 - 1; targetMouse.y = -(e.clientY / window.innerHeight) * 2 + 1; }
+            function onTouchMove(e) { if(e.touches.length > 0) { const t = e.touches[0]; realMouseX = t.clientX; realMouseY = t.clientY; targetMouse.x = (t.clientX / window.innerWidth) * 2 - 1; targetMouse.y = -(t.clientY / window.innerHeight) * 2 + 1; } }
+            function onResize() { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); points.material.uniforms.uPixelRatio.value = renderer.getPixelRatio(); cometPoints.material.uniforms.uPixelRatio.value = renderer.getPixelRatio(); }
+            const cursor = document.getElementById('custom-cursor'); const trail = document.getElementById('cursor-trail'); let curX = realMouseX, curY = realMouseY, trX = realMouseX, trY = realMouseY;
+            function animate() { const time = clock.getElapsedTime(); points.material.uniforms.uTime.value = time; mouse.x += (targetMouse.x - mouse.x) * 0.08; mouse.y += (targetMouse.y - mouse.y) * 0.08; points.material.uniforms.uMouse.value = mouse; camera.position.x += (targetMouse.x * 80 - camera.position.x) * 0.02; camera.position.y += (targetMouse.y * 80 - camera.position.y) * 0.02; camera.lookAt(0, 0, 0); updateComets(); curX += (realMouseX - curX) * 0.8; curY += (realMouseY - curY) * 0.8; trX += (realMouseX - trX) * 0.3; trY += (realMouseY - trY) * 0.3; cursor.style.transform = `translate3d(${curX}px, ${curY}px, 0) translate3d(-50%, -50%, 0)`; trail.style.transform = `translate3d(${trX}px, ${trY}px, 0) translate3d(-50%, -50%, 0)`; renderer.render(scene, camera); requestAnimationFrame(animate); }
+            const btn = document.getElementById('mb'); const img = document.getElementById('bi'); const snd = new Audio('https://www.myinstants.com/media/sounds/meow-1.mp3');
+            btn.addEventListener('mouseenter', () => document.body.classList.add('hovering')); btn.addEventListener('mouseleave', () => { document.body.classList.remove('hovering'); img.src = 'assets/unclicked.png'; });
             const handlePress = () => img.src = 'assets/clicked.png';
             const handleRelease = (e) => { img.src = 'assets/unclicked.png'; snd.currentTime = 0; snd.play(); spawnHearts(e); };
-            btn.addEventListener('mousedown', handlePress);
-            btn.addEventListener('touchstart', (e) => { handlePress(); e.preventDefault(); }, {passive: false});
-            btn.addEventListener('mouseup', handleRelease);
-            btn.addEventListener('touchend', (e) => { handleRelease(e.changedTouches[0]); e.preventDefault(); }, {passive: false});
-
-            function spawnHearts(e) {
-                const emojis = ['🌸','💖','✨','🐾','💕','🌺'];
-                const cx = e.clientX || (e.pageX || window.innerWidth/2);
-                const cy = e.clientY || (e.pageY || window.innerHeight/2);
-                for (let i = 0; i < 8; i++) {
-                    const h = document.createElement('span');
-                    h.className = 'ht'; h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-                    h.style.left = (cx + (Math.random() - 0.5) * 140) + 'px';
-                    h.style.top = (cy + (Math.random() - 0.5) * 80) + 'px';
-                    document.body.appendChild(h);
-                    h.addEventListener('animationend', () => h.remove());
-                }
-            }
-
+            btn.addEventListener('mousedown', handlePress); btn.addEventListener('touchstart', (e) => { handlePress(); e.preventDefault(); }, {passive: false}); btn.addEventListener('mouseup', handleRelease); btn.addEventListener('touchend', (e) => { handleRelease(e.changedTouches[0]); e.preventDefault(); }, {passive: false});
+            function spawnHearts(e) { const emojis = ['🌸','💖','✨','🐾','💕','🌺']; const cx = e.clientX || (e.pageX || window.innerWidth/2); const cy = e.clientY || (e.pageY || window.innerHeight/2); for (let i = 0; i < 8; i++) { const h = document.createElement('span'); h.className = 'ht'; h.textContent = emojis[Math.floor(Math.random() * emojis.length)]; h.style.left = (cx + (Math.random() - 0.5) * 140) + 'px'; h.style.top = (cy + (Math.random() - 0.5) * 80) + 'px'; document.body.appendChild(h); h.addEventListener('animationend', () => h.remove()); } }
             initAetheris();
         })();
     </script>
